@@ -27,16 +27,13 @@ const app = express()
 			secret: process.env.SESSION_SECRET,
 			saveUninitialized: true,
 			resave: true,
-			domain: process.env.DOMAIN,
+			domain: process.env.DOMAIN_PLAIN,
 		})
 	)
 	.use(passport.initialize())
 	.use(passport.session())
 	.use((req, res, next) => {
-		res.set(
-			'Access-Control-Allow-Origin',
-			'https://carvbot-twitch-client.herokuapp.com'
-		);
+		res.set('Access-Control-Allow-Origin', process.env.DOMAIN);
 		res.set('Access-Control-Allow-Credentials', true);
 		res.set('X-Frame-Option', 'ALLOW FROM https://www.twitch.tv/');
 		res.set(
