@@ -33,7 +33,10 @@ const app = express()
 	.use(passport.initialize())
 	.use(passport.session())
 	.use((req, res, next) => {
-		res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+		res.set(
+			'Access-Control-Allow-Origin',
+			'https://carvbot-twitch-client.herokuapp.com'
+		);
 		res.set('Access-Control-Allow-Credentials', true);
 		res.set('X-Frame-Option', 'ALLOW FROM https://www.twitch.tv/');
 		res.set(

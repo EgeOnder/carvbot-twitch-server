@@ -82,17 +82,17 @@ router.get('/twitch', passport.authenticate('twitch.js'));
 router.get(
 	'/twitch/callback',
 	passport.authenticate('twitch.js', {
-		failureRedirect: 'http://localhost:3000/failure',
+		failureRedirect: 'https://carvbot-twitch-client.herokuapp.com/failure',
 	}),
 	(req, res) => {
 		req.session.user = req.user;
-		res.redirect('http://localhost:3000/dashboard');
+		res.redirect('https://carvbot-twitch-client.herokuapp.com/dashboard');
 	}
 );
 
 router.get('/twitch/logout', isAuth, (req, res) => {
 	res.clearCookie('twitch.oauth2');
-	res.redirect('http://localhost:3000/');
+	res.redirect('https://carvbot-twitch-client.herokuapp.com/');
 });
 
 module.exports = router;
