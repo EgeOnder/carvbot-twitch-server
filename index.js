@@ -27,7 +27,7 @@ const app = express()
 			secret: process.env.SESSION_SECRET,
 			saveUninitialized: true,
 			resave: true,
-			domain: 'localhost',
+			domain: process.env.DOMAIN,
 		})
 	)
 	.use(passport.initialize())
