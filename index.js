@@ -55,11 +55,6 @@ const app = express()
 			'Origin, X-Requested-With, Content-Type, Accept'
 		);
 		next();
-	})
-	.use((req, res, next) => {
-		if (process.env.NODE_ENV != 'dev')
-			res.redirect('https://' + req.headers.host + req.url);
-		next();
 	});
 
 app.get('/session', isAuth, (req, res) => {
