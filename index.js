@@ -11,6 +11,7 @@ const { connectToDb } = require('./functions/connectToDb');
 const { isAuth } = require('./functions/isAuthorized');
 const authRoute = require('./routes/auth');
 const apiRoute = require('./routes/api');
+const publicRoute = require('./routes/public');
 
 connectToDb(process.env.MONGODB_STRING);
 
@@ -50,6 +51,7 @@ app.get('/session', isAuth, (req, res) => {
 /* ROUTES */
 app.use('/auth', authRoute);
 app.use('/api', apiRoute);
+app.use('/public', publicRoute);
 
 app.listen(process.env.PORT, () => {
 	console.log(`App listening on ${process.env.PORT}`);
