@@ -34,7 +34,18 @@ const app = express()
 	.use(passport.initialize())
 	.use(passport.session())
 	.use((req, res, next) => {
-		res.set('Access-Control-Allow-Origin', process.env.DOMAIN);
+		const allowedOrigins = [
+			process.env.DOMAIN,
+			'http://localhost:3000',
+			'http://127.0.0.1:3000',
+		];
+		const origin = req.headers.origin;
+
+		if (allowedOrigins.includes(origin)) {
+			res.set('Access-Control-Allow-Origin', origin);
+		} else {
+			res.set('Access-Control-Allow-Origin', process.env.DOMAIN);
+		}
 		res.set('Access-Control-Allow-Credentials', true);
 		res.set('X-Frame-Option', 'ALLOW FROM https://www.twitch.tv/');
 		res.set(
