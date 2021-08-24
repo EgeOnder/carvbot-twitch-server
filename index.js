@@ -49,7 +49,7 @@ const app = express()
 			res.set('Access-Control-Allow-Origin', process.env.DOMAIN);
 		}
 		res.set('Access-Control-Allow-Credentials', true);
-		res.set('X-Frame-Options', 'sameorigin');
+		res.set('X-Frame-Options', 'SAMEORIGIN');
 		res.set(
 			'Access-Control-Allow-Headers',
 			'Origin, X-Requested-With, Content-Type, Accept'
