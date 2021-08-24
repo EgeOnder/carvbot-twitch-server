@@ -13,4 +13,8 @@ router.get('/favicon/:file', (req, res) => {
 	);
 });
 
+router.get('/img/:file', (req, res) => {
+	res.sendFile(path.join(__dirname, '../', `/public/img/${req.params.file}`));
+});
+
 module.exports = router;
