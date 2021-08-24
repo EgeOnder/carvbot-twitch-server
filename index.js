@@ -28,6 +28,7 @@ const app = express()
 			secret: process.env.SESSION_SECRET,
 			saveUninitialized: true,
 			resave: true,
+			secure: process.env.NODE_ENV == 'dev' ? false : true,
 			domain: process.env.DOMAIN_PLAIN,
 		})
 	)
@@ -36,6 +37,7 @@ const app = express()
 	.use((req, res, next) => {
 		const allowedOrigins = [
 			process.env.DOMAIN,
+			process.env.DOMAIN_WO_WWW,
 			'http://localhost:3000',
 			'http://127.0.0.1:3000',
 		];
@@ -47,11 +49,16 @@ const app = express()
 			res.set('Access-Control-Allow-Origin', process.env.DOMAIN);
 		}
 		res.set('Access-Control-Allow-Credentials', true);
-		res.set('X-Frame-Option', 'ALLOW FROM https://www.twitch.tv/');
+		res.set('X-Frame-Options', 'sameorigin');
 		res.set(
 			'Access-Control-Allow-Headers',
 			'Origin, X-Requested-With, Content-Type, Accept'
 		);
+		next();
+	})
+	.use((req, res, next) => {
+		if (process.env.NODE_ENV != 'dev')
+			res.redirect('https://' + req.headers.host + req.url);
 		next();
 	});
 
