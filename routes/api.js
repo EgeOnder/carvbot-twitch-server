@@ -4,13 +4,53 @@ const axios = require('axios');
 
 const { commandSchema } = require('../models/Command');
 const { userSchema } = require('../models/User');
+const { specialCommandSchema } = require('../models/SpecialCommand');
 
 const User = model('User', userSchema);
 const Command = model('Command', commandSchema);
+const SpecialCommand = model('SpecialCommand', specialCommandSchema);
 
 require('dotenv').config();
 
 const router = Router();
+
+router.get('/commands/special', async (req, res) => {
+	const allCommands = await SpecialCommand.find({});
+
+	return res.json(allCommands);
+});
+
+router.get('/commands/special/:name', async (req, res) => {
+	const specialCommand = await SpecialCommand.findOne({
+		name: req.params.name,
+	});
+
+	return res.json(specialCommand);
+});
+
+router.post('/commands/special', async (req, res) => {
+	const { name, display_name, response, description } = req.body;
+
+	const exists = await SpecialCommand.findOne({ name: name });
+
+	if (exists)
+		return res.json({ error: 'This special command already exists!' });
+	else {
+		const newSpecialCommand = await SpecialCommand.create({
+			name: name,
+			display_name: display_name,
+			response: response,
+			description: description,
+			createdAt: Date.now(),
+		});
+
+		await newSpecialCommand.save();
+		return res.json({
+			message: 'Special command has been created!',
+			special_command: newSpecialCommand,
+		});
+	}
+});
 
 router.get('/commands/:id', async (req, res) => {
 	const userId = req.params.id;
@@ -82,11 +122,19 @@ router.post('/commands/:token', async (req, res) => {
 	const commandBase = await Command.findOne({ twitchId: user.twitchId });
 
 	if (user) {
+		const specialCommandBase = await SpecialCommand.findOne({
+			name: specialCommand,
+		});
+
 		const newCommandBase = {
 			command: command,
 			command_name: commandName,
-			command_description: commandDescription,
-			command_response: commandResponse,
+			command_description: specialCommandBase
+				? specialCommandBase.description
+				: commandDescription,
+			command_response: specialCommandBase
+				? specialCommandBase.response
+				: commandResponse,
 			special_command: specialCommand,
 			createdAt: Date.now(),
 		};
@@ -98,9 +146,21 @@ router.post('/commands/:token', async (req, res) => {
 			const commandExists = await Command.findOne({
 				'commands.command': command,
 			});
+			if (specialCommand) {
+				const specialCommandExists = await Command.findOne({
+					'commands.special_command': specialCommand,
+				});
+
+				if (specialCommandExists)
+					return res.json({
+						error: 'This special command has already been taken.',
+					});
+			}
 
 			if (nameExists)
-				return res.json({ error: 'This command name already exists.' });
+				return res.json({
+					error: 'This command name already exists.',
+				});
 			if (commandExists)
 				return res.json({ error: 'This command already exists.' });
 
@@ -148,7 +208,7 @@ router.delete('/commands/:token/:names', async (req, res) => {
 			await commandBase.save();
 
 			return res.json({
-				message: 'Deletion successful!',
+				message: 'Command(s) has been successfully deleted!',
 				deletedIds: deletedIds,
 			});
 		} else return res.json({ error: 'No commands found for this user!' });
